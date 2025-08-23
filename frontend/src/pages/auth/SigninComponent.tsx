@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "@/services/ApiServices";
+import Cookies from "js-cookie";
 
 const SigninComponent: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -26,7 +27,9 @@ const SigninComponent: React.FC = () => {
     setError(null);
 
     try {
-      await login({ email, password });
+      const res = await login({ email, password });
+      if (res?.result?.token)
+        Cookies.set("token", res.result.token, { expires: 7 });
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {
