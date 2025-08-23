@@ -1,5 +1,6 @@
 export interface IRoom {
   roomId: string;
+  banner: string;
   title: string;
   description: string;
   createdBy: string;

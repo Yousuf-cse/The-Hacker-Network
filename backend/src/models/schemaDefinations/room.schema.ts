@@ -6,6 +6,8 @@ import { GENERAL_SCHEMA_OPTIONS } from "../../constants/model/schemaOptions";
 const roomSchema = new Schema<IRoom>(
   {
     roomId: SCHEMA_DEFINATION_PROPERTY.requiredString,
+    banner: SCHEMA_DEFINATION_PROPERTY.requiredString,
+    title: SCHEMA_DEFINATION_PROPERTY.requiredString,
     description: SCHEMA_DEFINATION_PROPERTY.requiredString,
     createdBy: SCHEMA_DEFINATION_PROPERTY.requiredString,
     members: SCHEMA_DEFINATION_PROPERTY.requiredArrayOfObjectId,
