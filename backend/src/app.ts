@@ -3,6 +3,7 @@ import { config } from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db";
 import authRouter from "./api/routes/auth/auth.routes";
+import roomRouter from "./api/routes/room/room.routes";
 import requestRouter from "./api/routes/request/request.routes";
 
 config();
@@ -20,6 +21,7 @@ app.use(cors());
 // Router
 app.use("/api/auth", authRouter);
 app.use("/api/request", requestRouter);
+app.use("/api/room", roomRouter);
 
 // Connection Database
 connectDB();
