@@ -33,6 +33,11 @@ const userSchema = new Schema<IUser>(
         message: "Invalid email format",
       },
     },
+    password: {
+      ...SCHEMA_DEFINATION_PROPERTY.requiredString,
+      min: 8,
+      max: 16,
+    },
     phone_number: {
       ...SCHEMA_DEFINATION_PROPERTY.requiredString,
       unique: true,

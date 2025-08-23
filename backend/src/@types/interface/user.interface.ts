@@ -5,6 +5,7 @@ export interface IUser {
   age: number;
   avatar: string;
   email: string;
+  password: string;
   phone_number: string;
   address: {
     street: string;
