@@ -1,16 +1,8 @@
-// export const getSkillBasedUserRecommended = () => {
-//     try {
-
 import { Request, Response } from "express";
 import ConnectionRequest from "../../../models/connectionRequests/connectionRequest.model";
 import HackerHouse from "../../../models/room/room.model";
 import { generateUniqueRoomId } from "../../../services/generateUniqueRoomId.service";
 import mongoose from "mongoose";
-
-//     } catch (error) {
-
-//     }
-// }
 
 // Create new connection request
 export const createConnectionRequest = async (req: Request, res: Response) => {
@@ -158,13 +150,13 @@ export const acceptConnectionRequest = async (req: Request, res: Response) => {
     // Create Room when accepted
     const room = await HackerHouse.create({
       roomId: generatedRoomId,
-      banner: "",
+      banner: "https://img.jpg",
       title: "Private Chat",
       description: `Room for ${request.from_user_objectId} and ${request.to_user_objectId}`,
       createdBy: request.from_user_objectId,
       members: [request.from_user_objectId, request.to_user_objectId],
-      max_members: 2,
-      location: "",
+      max_members: 6,
+      location: "kolkata",
       is_active: true,
     });
 
