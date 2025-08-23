@@ -41,6 +41,11 @@ const optionalObjectId: SchemaDefinitionProperty = {
   required: false,
 };
 
+const requiredArrayOfObjectId: SchemaDefinitionProperty = {
+  type: [Types.ObjectId],
+  required: true,
+};
+
 const requiredDate: SchemaDefinitionProperty = {
   type: Date,
   required: true,
@@ -62,6 +67,7 @@ const SCHEMA_DEFINATION_PROPERTY = {
   optionalObjectId,
   requiredDate,
   optionalDate,
+  requiredArrayOfObjectId,
 };
 
 export default SCHEMA_DEFINATION_PROPERTY;
