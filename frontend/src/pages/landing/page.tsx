@@ -4,17 +4,17 @@ import ProductDescription from "./ProductDescription";
 import Testimonials from "./Testimonals";
 import FindNow from "./FindNow";
 import Footer from "./Footer";
-const Landing= () => {
+const Landing = () => {
   return (
     <>
-     <Header/>
-     <Hero/>
-     <ProductDescription/>
-     <Testimonials/>
-     <FindNow/>
-     <Footer/>
+      <Header />
+      <Hero />
+      <ProductDescription />
+      <Testimonials />
+      <FindNow />
+      <Footer />
     </>
-  )
-}
+  );
+};
 
-export default Landing
+export default Landing;
