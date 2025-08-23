@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import { config } from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db";
+import authRouter from "./api/routes/auth/auth.routes";
+import requestRouter from "./api/routes/request/request.routes";
 
 config();
 
@@ -15,9 +17,15 @@ app.get("/", (_req: Request, res: Response) => {
 app.use(express.json());
 app.use(cors());
 
+// Router
+app.use("/api/auth", authRouter);
+app.use("/api/request", requestRouter);
+
 // Connection Database
 connectDB();
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(
+    `\x1b[33m \x1b[1m \x1b[4mServer running on http://localhost:${PORT}\x1b[0m`
+  );
 });

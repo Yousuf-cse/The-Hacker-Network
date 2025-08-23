@@ -9,7 +9,7 @@ const connectionRequestSchema = new Schema<IConnectionRequest>({
   from_user_objectId: SCHEMA_DEFINATION_PROPERTY.requiredObjectId,
   to_user_objectId: SCHEMA_DEFINATION_PROPERTY.requiredObjectId,
   status: {
-    ...SCHEMA_DEFINATION_PROPERTY,
+    ...SCHEMA_DEFINATION_PROPERTY.requiredString,
     enum: ["Accepted", "Pending", "Cancel"] as IConnectionStatus[],
   },
 });

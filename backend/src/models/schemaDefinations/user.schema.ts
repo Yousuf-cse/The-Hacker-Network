@@ -41,10 +41,6 @@ const userSchema = new Schema<IUser>(
     phone_number: {
       ...SCHEMA_DEFINATION_PROPERTY.requiredString,
       unique: true,
-      validate: {
-        validator: (v: string) => /^\+?[1-9]\d{1,14}$/.test(v),
-        message: "Invalid phone number format",
-      },
     },
     address: {
       street: {
@@ -55,7 +51,7 @@ const userSchema = new Schema<IUser>(
         ...SCHEMA_DEFINATION_PROPERTY.requiredString,
         trim: true,
       },
-      state: SCHEMA_DEFINATION_PROPERTY.optionalNullString,
+      state: SCHEMA_DEFINATION_PROPERTY.requiredString,
       postalCode: {
         ...SCHEMA_DEFINATION_PROPERTY.requiredString,
         validate: {
@@ -67,8 +63,7 @@ const userSchema = new Schema<IUser>(
         ...SCHEMA_DEFINATION_PROPERTY.requiredString,
         trim: true,
       },
-      countryCode: SCHEMA_DEFINATION_PROPERTY.optionalNullString,
-      landmark: SCHEMA_DEFINATION_PROPERTY.optionalNullString,
+      landmark: SCHEMA_DEFINATION_PROPERTY.requiredString,
     },
     education: {
       college_name: {

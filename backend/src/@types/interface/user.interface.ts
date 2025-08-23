@@ -10,11 +10,10 @@ export interface IUser {
   address: {
     street: string;
     city: string;
-    state?: string;
+    state: string;
     postalCode: string;
     country: string;
-    countryCode?: string;
-    landmark?: string;
+    landmark: string;
   };
 
   education: {
