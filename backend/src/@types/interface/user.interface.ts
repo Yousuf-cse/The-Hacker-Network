@@ -3,7 +3,7 @@ export type ExLevel = "Beginner" | "Intermediate" | "Advanced" | "Expert";
 export interface IUser {
   full_name: string;
   age: number;
-  avatar: string;
+  avatar?: string;
   email: string;
   password: string;
   phone_number: string;

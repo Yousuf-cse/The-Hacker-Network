@@ -17,7 +17,7 @@ const userSchema = new Schema<IUser>(
       max: 120,
     },
     avatar: {
-      ...SCHEMA_DEFINATION_PROPERTY.requiredString,
+      ...SCHEMA_DEFINATION_PROPERTY.optionalNullString,
       validate: {
         validator: (v: string) =>
           /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/.test(v),
