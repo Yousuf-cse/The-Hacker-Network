@@ -13,6 +13,7 @@ import {
   Award,
   ChevronLeft,
   ChevronRight,
+  Phone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +35,7 @@ type ExLevel = "Beginner" | "Intermediate" | "Advanced" | "Expert";
 interface SignupFormData {
   // Step 1: Basic Info
   full_name: string;
+  phone_number: string;
   email: string;
   age: string;
   password: string;
@@ -74,6 +76,7 @@ const MultiStepSignup = () => {
     email: "",
     password: "",
     age: "",
+    phone_number: "",
     confirmPassword: "",
     address: {
       street: "",
@@ -144,14 +147,8 @@ const MultiStepSignup = () => {
 
     try {
       setLoading(true);
-      const res = await signUp(formData);
-
-      if (res?.result?.token) {
-        Cookies.set("token", res.result.token, { expires: 7 });
-        toast("Signup successful");
-      } else {
-        toast("An error occurred during signup");
-      }
+      await signUp(formData);
+      toast("Signup successful, Please login now");
     } catch (error) {
       toast("An error occurred during signup");
     } finally {
@@ -228,6 +225,28 @@ const MultiStepSignup = () => {
             placeholder="Enter your email"
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
+            className="pl-10 h-12 font-inter transition-all duration-200 focus:shadow-lg hover:border-gray-400 focus:border-blue-500"
+          />
+        </div>
+      </div>
+
+      {/* Phone field */}
+      <div className="space-y-2">
+        <Label
+          htmlFor="phone"
+          className="text-sm font-medium text-gray-700 font-inter"
+        >
+          Phone Number
+        </Label>
+
+        <div className="relative group">
+          <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+          <Input
+            id="phone_number"
+            type="tel"
+            placeholder="Enter your phone number"
+            value={formData.phone_number}
+            onChange={(e) => handleInputChange("phone_number", e.target.value)}
             className="pl-10 h-12 font-inter transition-all duration-200 focus:shadow-lg hover:border-gray-400 focus:border-blue-500"
           />
         </div>
