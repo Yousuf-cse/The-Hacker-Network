@@ -52,7 +52,7 @@ export const login = async (req: Request, res: Response) => {
 export const signupController = async (req: Request, res: Response) => {
   try {
     const userData: IUser = req.body;
-
+    
     // Validate required fields
     if (
       !userData.full_name ||

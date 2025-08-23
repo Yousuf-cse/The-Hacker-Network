@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Reveal from "./Reveal";
 import hhBanner from "@/assets/hhBanner.png";
 
@@ -21,9 +22,12 @@ export default function Hero() {
           </Reveal>
 
           <Reveal direction="up">
-            <button className="font-inter bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg">
+            <Link
+              to="/auth?new"
+              className="font-inter bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
+            >
               Find Your Crew
-            </button>
+            </Link>
           </Reveal>
         </div>
 
