@@ -16,7 +16,14 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  })
+);
+
+console.log(process.env.CORS_ORIGIN);
 
 // Router
 app.use("/api/auth", authRouter);
