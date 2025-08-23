@@ -5,6 +5,7 @@ import { Request, Response } from "express";
 import ConnectionRequest from "../../../models/connectionRequests/connectionRequest.model";
 import HackerHouse from "../../../models/room/room.model";
 import { generateUniqueRoomId } from "../../../services/generateUniqueRoomId.service";
+import mongoose from "mongoose";
 
 //     } catch (error) {
 
@@ -60,34 +61,86 @@ export const createConnectionRequest = async (req: Request, res: Response) => {
 
 // Get all requests
 
-// export const getConnectionRequests = async (req: Request, res: Response) => {
-//   try {
-//     const { userId } = req.query;
-//     if (!userId) {
-//       return res.status(400).json({ message: "User ID is required" });
-//     }
+export const getConnectionRequests = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.query;
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
 
-//     const request = await ConnectionRequest.aggregate([
-//       {
-//         $match: {
-//           $or: [{ from_user_objectId: userId }, { to_user_objectId: userId }],
-//         },
-//       },
-//       {
-//         $lookup : {
+    const userObjectId = new mongoose.Types.ObjectId(userId as string);
 
-//         }
-//       }
-//     ]);
-//   } catch (error) {
-//     console.error("Error fetching connection requests:", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server error !...",
-//     });
-//   }
-// };
+    const requests = await ConnectionRequest.aggregate([
+      {
+        $match: {
+          $or: [
+            { from_user_objectId: userObjectId },
+            { to_user_objectId: userObjectId },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "from_user_objectId",
+          foreignField: "_id",
+          as: "fromUser",
+        },
+      },
+      { $unwind: "$fromUser" },
+      {
+        $lookup: {
+          from: "users",
+          localField: "to_user_objectId",
+          foreignField: "_id",
+          as: "toUser",
+        },
+      },
+      { $unwind: "$toUser" },
+    ]);
 
+    const formatted = requests.map((reqDoc: any) => {
+      const isSender = reqDoc.from_user_objectId.toString() === userId;
+
+      return {
+        _id: reqDoc._id,
+        status: reqDoc.status,
+        role: isSender ? "sender" : "receiver",
+        action: isSender
+          ? "Request Sent"
+          : reqDoc.status === "Pending"
+          ? "Confirm / Cancel"
+          : reqDoc.status,
+        from: {
+          id: reqDoc.fromUser._id,
+          full_name: reqDoc.fromUser.full_name,
+          avatar: reqDoc.fromUser.avatar,
+          email: reqDoc.fromUser.email,
+          skills: reqDoc.fromUser.skills,
+        },
+        to: {
+          id: reqDoc.toUser._id,
+          full_name: reqDoc.toUser.full_name,
+          avatar: reqDoc.toUser.avatar,
+          email: reqDoc.toUser.email,
+          skills: reqDoc.toUser.skills,
+        },
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Data fetch successfully ...",
+      requests: formatted,
+    });
+  } catch (error) {
+    console.error("Error fetching connection requests:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server error !...",
+    });
+  }
+};
 // Accept connection request
 export const acceptConnectionRequest = async (req: Request, res: Response) => {
   try {
