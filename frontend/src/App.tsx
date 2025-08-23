@@ -1,12 +1,20 @@
-import './App.css'
-import Landing from './pages/landing/page'
-function App() {
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
+import Applayout from "./layout";
+import Landing from "./pages/landing/page";
 
-  return (
-    <>
-     <Landing/>
-    </>
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/" element={<Applayout />}>
+      <Route index element={<Landing />} />
+    </Route>
   )
-}
+);
 
-export default App
+export default function App() {
+  return <RouterProvider router={router} />;
+}
