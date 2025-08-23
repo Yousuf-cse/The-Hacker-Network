@@ -6,7 +6,7 @@ const requiredString: SchemaDefinitionProperty = {
 };
 
 const optionalNullString: SchemaDefinitionProperty = {
-  type: null,
+  type: String,
   required: false,
 };
 
