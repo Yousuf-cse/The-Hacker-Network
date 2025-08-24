@@ -1,4 +1,5 @@
 import { Facebook, Linkedin, Youtube, Instagram } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Header: React.FC = () => {
   return (
@@ -24,10 +25,12 @@ const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* CTA Button */}
-      <button className="font-inter bg-purple-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-2 rounded-lg text-sm sm:text-base font-medium hover:bg-purple-700 transition-colors">
-        Start
-      </button>
+      <Link
+        to="/auth?login"
+        className="font-inter bg-purple-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-2 rounded-lg text-sm sm:text-base font-medium hover:bg-purple-700 transition-colors"
+      >
+        Login
+      </Link>
     </header>
   );
 };

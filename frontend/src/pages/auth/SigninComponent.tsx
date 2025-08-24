@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "@/services/ApiServices";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 const SigninComponent: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -21,6 +22,7 @@ const SigninComponent: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     setIsLoading(true);
@@ -30,6 +32,7 @@ const SigninComponent: React.FC = () => {
       const res = await login({ email, password });
       if (res?.result?.token)
         Cookies.set("token", res.result.token, { expires: 7 });
+      navigate("/home");
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {

@@ -10,13 +10,21 @@ import AuthLogic from "./pages/auth/AuthLogic";
 import HackerNetworkPage from "./pages/HHRoom/HackerNetworkPage";
 import { useEffect } from "react";
 import socket from "./socket";
+import PublicRoute from "./route/PublicRoute";
+import PrivateRoute from "./route/PrivateRoute";
+import Home from "./pages/home/Home";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Applayout />}>
-      <Route index element={<Landing />} />
-      <Route path="/auth" element={<AuthLogic />} />
-      <Route path="/hacker-room" element={<HackerNetworkPage />} />
+      <Route index element={<PublicRoute element={<Landing />} />} />
+      <Route path="auth" element={<PublicRoute element={<AuthLogic />} />} />
+
+      <Route
+        path="hacker-room"
+        element={<PrivateRoute element={<HackerNetworkPage />} />}
+      />
+      <Route path="home" element={<PrivateRoute element={<Home />} />} />
     </Route>
   )
 );
