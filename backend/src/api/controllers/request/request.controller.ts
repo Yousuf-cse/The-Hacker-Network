@@ -6,6 +6,83 @@ import mongoose from "mongoose";
 import { io } from "../../../app";
 import Notification_Bucket from "../../../models/notification/notification.model";
 
+// Get Request by ID
+export const getConnectionRequestById = async (req: Request, res: Response) => {
+  try {
+    const { requestId } = req.params;
+
+    if (!requestId || !mongoose.Types.ObjectId.isValid(requestId)) {
+      return res.status(400).json({ message: "Valid Request ID is required" });
+    }
+
+    const request = await ConnectionRequest.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(requestId),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "from_user_objectId",
+          foreignField: "_id",
+          as: "from_user",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "to_user_objectId",
+          foreignField: "_id",
+          as: "to_user",
+        },
+      },
+      {
+        $unwind: "$from_user",
+      },
+      {
+        $unwind: "$to_user",
+      },
+      {
+        $project: {
+          _id: 1,
+          status: 1,
+          from: {
+            id: "$from_user._id",
+            full_name: "$from_user.full_name",
+            avatar: "$from_user.avatar",
+            email: "$from_user.email",
+            skills: "$from_user.skills",
+          },
+          to: {
+            id: "$to_user._id",
+            full_name: "$to_user.full_name",
+            avatar: "$to_user.avatar",
+            email: "$to_user.email",
+            skills: "$to_user.skills",
+          },
+        },
+      },
+    ]);
+
+    if (!request || request.length === 0) {
+      return res.status(404).json({ message: "Connection request not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Request fetched successfully",
+      request: request[0],
+    });
+  } catch (error) {
+    console.error("Error fetching connection request by ID:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server error",
+    });
+  }
+};
+
 // Get All Request
 export const getConnectionRequests = async (req: Request, res: Response) => {
   try {
