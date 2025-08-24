@@ -3,13 +3,10 @@ import axios, { type AxiosInstance, type AxiosResponse } from "axios";
 type ExLevel = "Beginner" | "Intermediate" | "Advanced" | "Expert";
 
 interface SignupFormData {
-  // Step 1: Basic Info
   full_name: string;
   email: string;
   password: string;
   confirmPassword: string;
-
-  // Step 2: Address
   address: {
     street: string;
     city: string;
@@ -19,8 +16,6 @@ interface SignupFormData {
     countryCode?: string;
     landmark?: string;
   };
-
-  // Step 3: Education & Skills
   education: {
     college_name: string;
     year_of_study: number;
@@ -61,7 +56,7 @@ export const signUp = (data: SignupFormData) =>
 export const login = (data: { email: string; password: string }) =>
   handleRequest<{
     token: string;
-    user: { id: string; name: string; email: string };
+    user: { id: string; name: string; email: string; _id: string };
   }>(api.post("/auth/login", data));
 
 // ---------------- Connection Request Endpoints ----------------
@@ -69,9 +64,14 @@ export const createRequest = (data: { targetUserId: string }) =>
   handleRequest<{ requestId: string }>(api.post("/request", data));
 
 export const acceptRequest = (requestId: string) =>
-  handleRequest<{ roomId: string }>(
-    api.put(`/request/accept/${requestId}`)
-  );
+  handleRequest<{ roomId: string }>(api.put(`/request/accept/${requestId}`));
 
 export const cancelRequest = (requestId: string) =>
   handleRequest<null>(api.put(`/request/cancel/${requestId}`));
+
+// -------------------- User Endpoints --------------------
+export const getUserDetails = (id: string) =>
+  handleRequest<any>(api.get(`/profile/${id}`));
+
+export const findSimilarProfiles = (id: string) =>
+  handleRequest<any[]>(api.post("/find-similar", { _id: id }));
