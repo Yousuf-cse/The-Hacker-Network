@@ -4,12 +4,15 @@ import "./index.css";
 import App from "./App.tsx";
 import { Toaster } from "sonner";
 import { AuthProvider } from "./contexts/AuthProvider.tsx";
+import { NotificationProvider } from "./contexts/NotificationContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
-      <App />
-      <Toaster />
+      <NotificationProvider>
+        <App />
+        <Toaster />
+      </NotificationProvider>
     </AuthProvider>
   </StrictMode>
 );
