@@ -1,26 +1,35 @@
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 export default function HackerRoomSection() {
+  const navigate = useNavigate();
+  const [requested, setRequested] = useState<{ [key: number]: boolean }>({});
+
   const hackerHouses = [
     {
       id: 1,
       title: "New Town",
-      image: "/api/placeholder/400/300",
+      image: "https://res.cloudinary.com/dpw89wko7/image/upload/v1755944742/get_2_dlgq17.jpg",
       location: "New Town"
     },
     {
       id: 2,
       title: "Delhi",
-      image: "/api/placeholder/400/300",
+      image: "https://res.cloudinary.com/dpw89wko7/image/upload/v1755944742/get_annw1j.jpg",
       location: "Delhi"
     },
     {
       id: 3,
       title: "Bengalore",
-      image: "/api/placeholder/400/300",
+      image: "https://res.cloudinary.com/dpw89wko7/image/upload/v1755944745/get_1_jvimas.jpg",
       location: "Bengalore"
     }
   ];
+
+  const handleRequest = (id: number) => {
+    setRequested((prev) => ({ ...prev, [id]: true }));
+  };
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-16">
@@ -34,7 +43,9 @@ export default function HackerRoomSection() {
         <p className="font-montserrat text-gray-600 text-base sm:text-lg md:text-xl mb-8 max-w-3xl mx-auto">
           Create your own group and make it visible for others to join—grow your crew, collaborate, and connect.
         </p>
-        <Button className="font-inter bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 sm:py-4 sm:px-8 rounded-lg text-base sm:text-lg transition-all duration-200 transform hover:scale-105 shadow-lg">
+        <Button  className="font-inter bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 sm:py-4 sm:px-8 rounded-lg text-base sm:text-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
+         onClick={() => navigate('/hacker-room')}
+         >
           Create
         </Button>
       </div>
@@ -42,22 +53,15 @@ export default function HackerRoomSection() {
       {/* Cards Grid (always 3 in a row) */}
       <div className="grid grid-cols-3 gap-4 sm:gap-6 md:gap-8">
         {hackerHouses.map((house) => (
-          <div 
-            key={house.id} 
-            className="flex flex-col"
-          >
+          <div key={house.id} className="flex flex-col">
             {/* Card */}
-            <div className="group relative bg-white rounded-lg sm:rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden mb-4 sm:mb-6">
+            <div className="group relative rounded-lg sm:rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden mb-4 sm:mb-6">
               <div className="aspect-[4/3] overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                  {/* Placeholder for the actual images */}
-                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                    <div className="text-center">
-                      <div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <img
+                  src={house.image}
+                  alt={house.title}
+                  className="w-full h-full object-cover"
+                />
               </div>
               
               {/* Card Title Overlay */}
@@ -73,16 +77,27 @@ export default function HackerRoomSection() {
 
             {/* Request to Join Button */}
             <div className="flex justify-center">
-              <Button 
-                variant="outline"
-                className="w-full text-[10px] sm:text-sm md:text-base border border-purple-300 text-purple-700 hover:bg-purple-50 hover:border-purple-500 font-semibold py-1.5 sm:py-2 md:py-3 rounded-md sm:rounded-lg transition-all duration-300 hover:shadow-md"
-              >
-                Request to Join
-              </Button>
+              {requested[house.id] ? (
+                <Button
+                  variant="outline"
+                  disabled
+                  className="w-full text-[10px] sm:text-sm md:text-base border border-green-300 text-green-700 bg-green-50 font-semibold py-1.5 sm:py-2 md:py-3 rounded-md sm:rounded-lg transition-all duration-300"
+                >
+                  Request Sent
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="w-full text-[10px] sm:text-sm md:text-base border border-purple-300 text-purple-700 hover:bg-purple-50 hover:border-purple-500 font-semibold py-1.5 sm:py-2 md:py-3 rounded-md sm:rounded-lg transition-all duration-300 hover:shadow-md"
+                  onClick={() => handleRequest(house.id)}
+                >
+                  Request to Join
+                </Button>
+              )}
             </div>
           </div>
         ))}
       </div>
-    </div>
-  );
+    </div>
+  );
 }
