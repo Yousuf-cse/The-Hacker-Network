@@ -10,6 +10,8 @@ import authRouter from "./api/routes/auth/auth.routes";
 import roomRouter from "./api/routes/room/room.routes";
 import requestRouter from "./api/routes/request/request.routes";
 import userRouter from "./api/routes/user/user.route";
+import notificationRouter from "./api/routes/notification/notification.route";
+
 import { registerSocketHandlers } from "./socket/socket";
 
 // Load environment variables
@@ -54,6 +56,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/request", requestRouter);
 app.use("/api/room", roomRouter);
 app.use("/api/user", userRouter);
+app.use("/api/notification", notificationRouter);
 
 // DB connection
 connectDB();

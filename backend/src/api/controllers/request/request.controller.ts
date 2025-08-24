@@ -4,6 +4,7 @@ import HackerHouse from "../../../models/room/room.model";
 import { generateUniqueRoomId } from "../../../services/generateUniqueRoomId.service";
 import mongoose from "mongoose";
 import { io } from "../../../app";
+import Notification_Bucket from "../../../models/notification/notification.model";
 
 // Get All Request
 export const getConnectionRequests = async (req: Request, res: Response) => {
@@ -113,7 +114,15 @@ export const createConnectionRequest = async (req: Request, res: Response) => {
       status: "Pending",
     });
 
-    // ✅ Emit real-time notification to receiver
+    // Store notification
+    await Notification_Bucket.create({
+      sender_object_id: from_user_objectId,
+      reciever_object_id: to_user_objectId,
+      message: "Sent you a match request",
+      action: "VIEW_REQUEST",
+    });
+
+    // Emit real-time notification to receiver
     io.to(to_user_objectId.toString()).emit("receive_request", {
       senderId: from_user_objectId,
       requestId: connectionRequest._id,
