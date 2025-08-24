@@ -4,9 +4,17 @@ type User = {
   age: number;
   avatar?: string;
   email: string;
-  password: string;
   phone_number: string;
-  address: { lang: number; long: number };
+  address: {
+    lat?: number;
+    lon?: number;
+    street?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    country?: string;
+    landmark?: string;
+  };
   education?: object;
   skills?: object;
   experience_level: string;
@@ -21,7 +29,7 @@ function getDistance(
   lat2: number,
   lon2: number
 ): number {
-  const R = 6371;
+  const R = 6371; // Earth radius in km
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
   const a =
@@ -38,16 +46,25 @@ export function sortUsersByDistance(
   currentUser: User,
   users: User[]
 ): (User & { near: number })[] {
-  const { lang: currLat, long: currLon } = currentUser.address;
+  const { lat: currLat, lon: currLon } = currentUser.address;
+
+  if (currLat == null || currLon == null) {
+    return users
+      .filter((u) => u._id !== currentUser._id)
+      .map((user) => ({ ...user, near: Infinity }));
+  }
 
   return users
     .filter((u) => u._id !== currentUser._id)
     .map((user) => {
+      if (user.address.lat == null || user.address.lon == null) {
+        return { ...user, near: Infinity };
+      }
       const distance = getDistance(
         currLat,
         currLon,
-        user.address.lang,
-        user.address.long
+        user.address.lat,
+        user.address.lon
       );
       return { ...user, near: Number(distance.toFixed(2)) };
     })

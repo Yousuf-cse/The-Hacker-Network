@@ -5,7 +5,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { getCurrentUser } from "../services/ApiServices";
+import { getUserDetails } from "../services/ApiServices";
 import Cookies from "js-cookie";
 
 type AuthContextType = {
@@ -39,8 +39,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError("");
     try {
-      const res = await getCurrentUser();
-      setUser(res.data.data);
+      const res = await getUserDetails(Cookies.get("_id") as string);
+      setUser(res.result.user);
     } catch (err: any) {
       setError(err?.response?.data?.message || "Failed to fetch user");
       setUser(null);

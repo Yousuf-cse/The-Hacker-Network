@@ -32,6 +32,8 @@ const SigninComponent: React.FC = () => {
       const res = await login({ email, password });
       if (res?.result?.token)
         Cookies.set("token", res.result.token, { expires: 7 });
+      Cookies.set("_id", res.result.user._id, { expires: 7 });
+
       navigate("/home");
     } catch (err: any) {
       setError(err.message || "Something went wrong");
