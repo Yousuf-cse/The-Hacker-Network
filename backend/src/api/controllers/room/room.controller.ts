@@ -71,3 +71,20 @@ export const getUserAllRooms = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getAllRooms = async (req: Request, res: Response) => {
+  try {
+    const rooms = await HackerHouse.find();
+
+    return res.status(200).json({
+      success: true,
+      message: "All rooms fetched successfully.",
+      rooms,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal Server error",
+    });
+  }
+};
