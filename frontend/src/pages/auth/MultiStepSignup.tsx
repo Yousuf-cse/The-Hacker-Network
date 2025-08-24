@@ -28,7 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { signUp } from "@/services/ApiServices";
-import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 type ExLevel = "Beginner" | "Intermediate" | "Advanced" | "Expert";
 
@@ -70,6 +70,7 @@ const MultiStepSignup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState<SignupFormData>({
     full_name: "",
@@ -149,6 +150,7 @@ const MultiStepSignup = () => {
       setLoading(true);
       await signUp(formData);
       toast("Signup successful, Please login now");
+      navigate("/auth?login");
     } catch (error) {
       toast("An error occurred during signup");
     } finally {

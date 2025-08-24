@@ -9,7 +9,7 @@ type PrivateRouteProps = {
 const PrivateRoute = ({ element }: PrivateRouteProps) => {
   const token = Cookies.get("token");
 
-  return token ? element : <Navigate to="/welcome" replace />;
+  return token ? element : <Navigate to="/" replace />;
 };
 
 export default PrivateRoute;
