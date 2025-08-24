@@ -1,24 +1,323 @@
 import { Button } from "@/components/ui/button"
-import { User, MessageCircle, Bell, X, Settings, LogOut, Mail, Send, Minimize2, Facebook, Linkedin, Youtube, Instagram, Trash2, Users, Crown, Check } from "lucide-react"
+import { User, MessageCircle, Bell, X, Settings, LogOut, Mail, Send, Minimize2, Facebook, Linkedin, Youtube, Instagram, Trash2, Users, Crown } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 
+
+
+
+// -------------------- NotificationModal Component --------------------
+function NotificationModal({ notifications, setShowNotificationModal }) {
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 md:items-start md:justify-end md:pt-20 md:pr-8">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] overflow-hidden md:max-w-sm border border-gray-100">
+        <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-primary-50 to-purple-50">
+          <h3 className="text-xl font-bold text-gray-800">Notifications</h3>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowNotificationModal(false)}
+            className="rounded-full hover:bg-white/80 h-8 w-8"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className="p-4 space-y-3 max-h-96 overflow-y-auto">
+          {notifications.map((notification) => (
+            <div key={notification.id} className="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:bg-primary-50 hover:border-primary-200 transition-all duration-200 cursor-pointer">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-800">{notification.message}</p>
+                  <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
+                </div>
+                {notification.type === "match" && <div className="w-2 h-2 bg-green-500 rounded-full ml-2 mt-1" />}
+                {notification.type === "message" && <div className="w-2 h-2 bg-primary-500 rounded-full ml-2 mt-1" />}
+                {notification.type === "system" && <div className="w-2 h-2 bg-orange-500 rounded-full ml-2 mt-1" />}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="p-4 border-t border-gray-100">
+          <Button className="w-full bg-primary-600 hover:bg-primary-700 text-white rounded-xl py-3">
+            Mark All as Read
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+
+
+
+// -------------------- ChatPopup Component --------------------
+function ChatPopup({ chatPopupRef, chatMessages, chatMessage, setChatMessage, handleKeyPress, handleSendMessage, setShowChatPopup }) {
+  return (
+    <div 
+      ref={chatPopupRef}
+      className="fixed bottom-24 right-0 mr-6 w-80 h-96 bg-white rounded-2xl shadow-2xl border border-gray-100 z-40 flex flex-col animate-in fade-in slide-in-from-bottom-2 duration-200"
+    >
+      {/* Chat Header */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gradient-to-r from-primary-500 to-purple-600 rounded-t-2xl">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+            <User className="h-4 w-4 text-white" />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-white">Sarah Chen</h4>
+            <p className="text-xs text-purple-100">Online</p>
+          </div>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setShowChatPopup(false)}
+          className="text-white hover:bg-white/20 h-8 w-8 rounded-full"
+        >
+          <Minimize2 className="h-4 w-4" />
+        </Button>
+      </div>
+
+      {/* Chat Messages */}
+      <div className="flex-1 p-4 overflow-y-auto space-y-3">
+        {chatMessages.map((msg) => (
+          <div key={msg.id} className={`flex ${msg.isOwn ? 'justify-end' : 'justify-start'}`}>
+            <div className={`max-w-[75%] rounded-2xl px-4 py-2 ${
+              msg.isOwn 
+                ? 'bg-primary-500 text-white' 
+                : 'bg-gray-100 text-gray-800'
+            }`}>
+              <p className="text-sm">{msg.message}</p>
+              <p className={`text-xs mt-1 ${
+                msg.isOwn ? 'text-purple-100' : 'text-gray-500'
+              }`}>
+                {msg.time}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Chat Input */}
+      <div className="p-3 border-t border-gray-100">
+        <div className="flex space-x-2">
+          <input
+            type="text"
+            value={chatMessage}
+            onChange={(e) => setChatMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Type a message..."
+            className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          />
+          <Button
+            onClick={handleSendMessage}
+            className="bg-primary-500 hover:bg-primary-600 text-white px-3 py-2 rounded-xl"
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+
+
+
+
+
+// -------------------- ProfileDropdown Component --------------------
+function ProfileDropdown() {
+  return (
+    <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in duration-200">
+      <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-primary-50 to-purple-50">
+        <div className="flex items-center space-x-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center">
+            <User className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-gray-800">Alex Developer</h4>
+            <p className="text-xs text-gray-600">Web3 Builder</p>
+          </div>
+        </div>
+      </div>
+      <div className="py-2">
+        <Button className="w-full justify-start hover:bg-primary-50 text-gray-800 font-normal border-none bg-transparent px-4 py-3 rounded-none">
+          <Settings className="h-4 w-4 mr-3" />
+          Account Settings
+        </Button>
+        <Button className="w-full justify-start hover:bg-primary-50 text-gray-800 font-normal border-none bg-transparent px-4 py-3 rounded-none">
+          <Mail className="h-4 w-4 mr-3" />
+          Messages
+        </Button>
+        <div className="border-t border-gray-100 mt-2 pt-2">
+          <Button className="w-full justify-start hover:bg-red-50 text-red-600 font-normal border-none bg-transparent px-4 py-3 rounded-none">
+            <LogOut className="h-4 w-4 mr-3" />
+            Sign Out
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+
+
+
+
+
+
+
+// -------------------- RoomModal Component --------------------
+function RoomModal({ selectedRoom, roomMessages, roomModalRef, handleDeleteRoom, setShowRoomModal, roomChatMessage, setRoomChatMessage, handleRoomKeyPress, handleSendRoomMessage }) {
+  if (!selectedRoom) return null
+
+  const currentMessages = roomMessages[selectedRoom.id] || selectedRoom.messages
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div 
+        ref={roomModalRef}
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden border border-gray-100"
+      >
+        {/* Room Header */}
+        <div className={`flex items-center justify-between p-6 bg-gradient-to-r ${selectedRoom.gradient} text-white`}>
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <Users className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold">{selectedRoom.name}</h3>
+              <p className="text-sm opacity-90">{selectedRoom.description}</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleDeleteRoom(selectedRoom.id)}
+              className="text-white hover:bg-white/20 h-10 w-10 rounded-full"
+              title="Leave Room"
+            >
+              <Trash2 className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowRoomModal(false)}
+              className="text-white hover:bg-white/20 h-10 w-10 rounded-full"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex h-[600px]">
+          {/* Members Sidebar */}
+          <div className="w-80 border-r border-gray-200 bg-gray-50 flex flex-col">
+            <div className="p-4 border-b border-gray-200">
+              <h4 className="font-semibold text-gray-800 mb-3">Members ({selectedRoom.members.length})</h4>
+              <div className="space-y-3">
+                {selectedRoom.members.map((member) => (
+                  <div key={member.id} className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-gray-100 hover:border-primary-200 transition-colors">
+                    <div className="relative">
+                      <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        {member.avatar}
+                      </div>
+                      {member.role === 'owner' && (
+                        <Crown className="absolute -top-1 -right-1 h-4 w-4 text-yellow-500" />
+                      )}
+                      <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
+                        member.isOnline ? 'bg-green-500' : 'bg-gray-400'
+                      }`} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-800 text-sm">{member.name}</p>
+                      <p className="text-xs text-gray-500 capitalize">{member.role}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Room Info */}
+            <div className="p-4 flex-1">
+              <h5 className="font-semibold text-gray-800 mb-2">Room Info</h5>
+              <div className="space-y-2 text-sm text-gray-600">
+                <p><span className="font-medium">Status:</span> {selectedRoom.status}</p>
+                <p><span className="font-medium">Duration:</span> {selectedRoom.duration}</p>
+                <p><span className="font-medium">Capacity:</span> {selectedRoom.memberCount}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Chat Area */}
+          <div className="flex-1 flex flex-col">
+            {/* Messages */}
+            <div className="flex-1 p-4 overflow-y-auto space-y-4 min-h-0">
+              {currentMessages.map((msg) => (
+                <div key={msg.id} className={`flex ${msg.isOwn ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[70%] rounded-2xl px-4 py-3 ${
+                    msg.isOwn 
+                      ? 'bg-primary-500 text-white' 
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {!msg.isOwn && (
+                      <p className="text-xs font-medium mb-1 opacity-70">{msg.sender}</p>
+                    )}
+                    <p className="text-sm">{msg.message}</p>
+                    <p className={`text-xs mt-1 ${
+                      msg.isOwn ? 'text-purple-100' : 'text-gray-500'
+                    }`}>
+                      {msg.time}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Message Input */}
+            <div className="p-4 border-t border-gray-200 bg-white">
+              <div className="flex space-x-3">
+                <input
+                  type="text"
+                  value={roomChatMessage}
+                  onChange={(e) => setRoomChatMessage(e.target.value)}
+                  onKeyPress={handleRoomKeyPress}
+                  placeholder="Type a message..."
+                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+                <Button
+                  onClick={handleSendRoomMessage}
+                  className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-3 rounded-xl"
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+
+
+
+
+// -------------------- Main HackerNetworkPage Component --------------------
 export default function HackerNetworkPage() {
   const [showNotificationModal, setShowNotificationModal] = useState(false)
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [showChatPopup, setShowChatPopup] = useState(false)
-  const [selectedRoom, setSelectedRoom] = useState(null)
+  type Room = typeof allRooms[number]
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
   const [showRoomModal, setShowRoomModal] = useState(false)
   const [chatMessage, setChatMessage] = useState('')
   const [joinedRooms, setJoinedRooms] = useState([1, 2]) // User has joined rooms 1 and 2
-  const [selectedMatchNotification, setSelectedMatchNotification] = useState(null)
-  const [notifications, setNotifications] = useState([
-    { id: 1, type: "match", message: "New match found for Web3 Builder's House!", time: "2 mins ago", matchedUser: "Sarah Chen", matchedRoom: "Web3 Builders" },
-    { id: 2, type: "message", message: "Sarah sent you a message about the React project", time: "1 hour ago" },
-    { id: 3, type: "system", message: "Your profile has been viewed 15 times today", time: "3 hours ago" },
-  ])
   const profileDropdownRef = useRef<HTMLDivElement>(null)
   const chatPopupRef = useRef<HTMLDivElement>(null)
-  const roomModalRef = useRef(null)
+  const roomModalRef = useRef<HTMLDivElement>(null)
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -32,7 +331,7 @@ export default function HackerNetworkPage() {
           setShowChatPopup(false)
         }
       }
-      if (roomModalRef.current && !roomModalRef.current.contains(event.target)) {
+      if (roomModalRef.current && !roomModalRef.current.contains(event.target as Node)) {
         setShowRoomModal(false)
       }
     }
@@ -42,6 +341,12 @@ export default function HackerNetworkPage() {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+
+  const notifications = [
+    { id: 1, type: "match", message: "New match found for Web3 Builder's House!", time: "2 mins ago" },
+    { id: 2, type: "message", message: "Sarah sent you a message about the React project", time: "1 hour ago" },
+    { id: 3, type: "system", message: "Your profile has been viewed 15 times today", time: "3 hours ago" },
+  ]
 
   const allRooms = [
     {
@@ -145,10 +450,10 @@ export default function HackerNetworkPage() {
   const rooms = allRooms.filter(room => joinedRooms.includes(room.id))
   const availableRooms = allRooms.filter(room => !joinedRooms.includes(room.id))
 
-  const [roomMessages, setRoomMessages] = useState({})
+  const [roomMessages, setRoomMessages] = useState<{ [key: number]: Array<{ id: number; sender: string; message: string; time: string; isOwn: boolean }> }>({})
   const [roomChatMessage, setRoomChatMessage] = useState('')
 
-  const handleRoomClick = (room) => {
+  const handleRoomClick = (room: Room) => {
     setSelectedRoom(room)
     setShowRoomModal(true)
     if (!roomMessages[room.id]) {
@@ -195,52 +500,6 @@ export default function HackerNetworkPage() {
     }
   }
 
-  // Handle match notification actions
-  const handleAcceptMatch = (notification) => {
-    // Create a new room with the matched user
-    const newRoomId = Math.max(...allRooms.map(r => r.id)) + 1
-    const newRoom = {
-      id: newRoomId,
-      name: `${notification.matchedUser} & You`,
-      description: `Private collaboration space`,
-      isJoined: true,
-      members: [
-        { id: 1, name: notification.matchedUser, avatar: notification.matchedUser[0], role: "member", isOnline: true },
-        { id: 2, name: "You", avatar: "Y", role: "member", isOnline: true },
-      ],
-      messages: [
-        { id: 1, sender: notification.matchedUser, message: 'Great! We\'re matched. Let\'s start collaborating!', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isOwn: false },
-      ],
-      gradient: "from-green-400 to-blue-500",
-      memberCount: "2/2",
-      status: "New Match",
-      duration: "Just Started"
-    }
-    
-    // Add the new room to allRooms and joinedRooms
-    allRooms.push(newRoom)
-    setJoinedRooms(prev => [...prev, newRoomId])
-    
-    // Remove the notification
-    setNotifications(prev => prev.filter(n => n.id !== notification.id))
-    
-    // Close modals
-    setSelectedMatchNotification(null)
-    setShowNotificationModal(false)
-  }
-
-  const handleCancelMatch = (notificationId) => {
-    // Remove the notification
-    setNotifications(prev => prev.filter(n => n.id !== notificationId))
-    setSelectedMatchNotification(null)
-  }
-
-  const handleNotificationClick = (notification) => {
-    if (notification.type === "match") {
-      setSelectedMatchNotification(notification)
-    }
-  }
-
   const [chatMessages, setChatMessages] = useState([
     { id: 1, sender: 'Sarah', message: 'Hey! Are you interested in joining our Web3 project?', time: '2:30 PM', isOwn: false },
     { id: 2, sender: 'You', message: 'Absolutely! Tell me more about it.', time: '2:32 PM', isOwn: true },
@@ -267,326 +526,11 @@ export default function HackerNetworkPage() {
     }
   }
 
-  const NotificationModal = () => (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 md:items-start md:justify-end md:pt-20 md:pr-8">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] overflow-hidden md:max-w-sm border border-gray-100">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-primary-50 to-purple-50">
-          <h3 className="text-xl font-bold text-gray-800">Notifications</h3>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              setShowNotificationModal(false)
-              setSelectedMatchNotification(null)
-            }}
-            className="rounded-full hover:bg-white/80 h-8 w-8"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-        
-        {selectedMatchNotification ? (
-          // Match notification detail view
-          <div className="p-6">
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8 text-white" />
-              </div>
-              <h4 className="text-lg font-bold text-gray-800 mb-2">Match Found!</h4>
-              <p className="text-sm text-gray-600">
-                You've been matched with <span className="font-semibold text-primary-600">{selectedMatchNotification.matchedUser}</span> for <span className="font-semibold text-primary-600">{selectedMatchNotification.matchedRoom}</span>
-              </p>
-            </div>
-            
-            <div className="space-y-3">
-              <Button 
-                onClick={() => handleAcceptMatch(selectedMatchNotification)}
-                className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl py-3 font-medium"
-              >
-                <Check className="h-4 w-4 mr-2" />
-                Accept Match
-              </Button>
-              <Button 
-                onClick={() => handleCancelMatch(selectedMatchNotification.id)}
-                variant="outline"
-                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl py-3 font-medium"
-              >
-                <X className="h-4 w-4 mr-2" />
-                Cancel Match
-              </Button>
-            </div>
-          </div>
-        ) : (
-          // Regular notifications list
-          <>
-            <div className="p-4 space-y-3 max-h-96 overflow-y-auto">
-              {notifications.map((notification) => (
-                <div 
-                  key={notification.id} 
-                  className="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:bg-primary-50 hover:border-primary-200 transition-all duration-200 cursor-pointer"
-                  onClick={() => handleNotificationClick(notification)}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-800">{notification.message}</p>
-                      <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
-                    </div>
-                    {notification.type === "match" && <div className="w-2 h-2 bg-green-500 rounded-full ml-2 mt-1" />}
-                    {notification.type === "message" && <div className="w-2 h-2 bg-primary-500 rounded-full ml-2 mt-1" />}
-                    {notification.type === "system" && <div className="w-2 h-2 bg-orange-500 rounded-full ml-2 mt-1" />}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="p-4 border-t border-gray-100">
-              <Button className="w-full bg-primary-600 hover:bg-primary-700 text-white rounded-xl py-3">
-                Mark All as Read
-              </Button>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  )
-
-  const ChatPopup = () => (
-    <div 
-      ref={chatPopupRef}
-      className="fixed bottom-24 right-0 mr-6 w-80 h-96 bg-white rounded-2xl shadow-2xl border border-gray-100 z-40 flex flex-col animate-in fade-in slide-in-from-bottom-2 duration-200"
-    >
-      {/* Chat Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gradient-to-r from-primary-500 to-purple-600 rounded-t-2xl">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-            <User className="h-4 w-4 text-white" />
-          </div>
-          <div>
-            <h4 className="text-sm font-bold text-white">Sarah Chen</h4>
-            <p className="text-xs text-purple-100">Online</p>
-          </div>
-        </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setShowChatPopup(false)}
-          className="text-white hover:bg-white/20 h-8 w-8 rounded-full"
-        >
-          <Minimize2 className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Chat Messages */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-3">
-        {chatMessages.map((msg) => (
-          <div key={msg.id} className={`flex ${msg.isOwn ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[75%] rounded-2xl px-4 py-2 ${
-              msg.isOwn 
-                ? 'bg-primary-500 text-white' 
-                : 'bg-gray-100 text-gray-800'
-            }`}>
-              <p className="text-sm">{msg.message}</p>
-              <p className={`text-xs mt-1 ${
-                msg.isOwn ? 'text-purple-100' : 'text-gray-500'
-              }`}>
-                {msg.time}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Chat Input */}
-      <div className="p-3 border-t border-gray-100">
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            value={chatMessage}
-            onChange={(e) => setChatMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type a message..."
-            className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-          />
-          <Button
-            onClick={handleSendMessage}
-            className="bg-primary-500 hover:bg-primary-600 text-white px-3 py-2 rounded-xl"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    </div>
-  )
-
-  const ProfileDropdown = () => (
-    <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in duration-200">
-      <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-primary-50 to-purple-50">
-        <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center">
-            <User className="h-6 w-6 text-white" />
-          </div>
-          <div>
-            <h4 className="text-sm font-bold text-gray-800">Alex Developer</h4>
-            <p className="text-xs text-gray-600">Web3 Builder</p>
-          </div>
-        </div>
-      </div>
-      <div className="py-2">
-        <Button className="w-full justify-start hover:bg-primary-50 text-gray-800 font-normal border-none bg-transparent px-4 py-3 rounded-none">
-          <Settings className="h-4 w-4 mr-3" />
-          Account Settings
-        </Button>
-        <Button className="w-full justify-start hover:bg-primary-50 text-gray-800 font-normal border-none bg-transparent px-4 py-3 rounded-none">
-          <Mail className="h-4 w-4 mr-3" />
-          Messages
-        </Button>
-        <div className="border-t border-gray-100 mt-2 pt-2">
-          <Button className="w-full justify-start hover:bg-red-50 text-red-600 font-normal border-none bg-transparent px-4 py-3 rounded-none">
-            <LogOut className="h-4 w-4 mr-3" />
-            Sign Out
-          </Button>
-        </div>
-      </div>
-    </div>
-  )
-
-  const RoomModal = () => {
-    if (!selectedRoom) return null
-    
-    const currentMessages = roomMessages[selectedRoom.id] || selectedRoom.messages
-    
-    return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div 
-          ref={roomModalRef}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden border border-gray-100"
-        >
-          {/* Room Header */}
-          <div className={`flex items-center justify-between p-6 bg-gradient-to-r ${selectedRoom.gradient} text-white`}>
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                <Users className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">{selectedRoom.name}</h3>
-                <p className="text-sm opacity-90">{selectedRoom.description}</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleDeleteRoom(selectedRoom.id)}
-                className="text-white hover:bg-white/20 h-10 w-10 rounded-full"
-                title="Leave Room"
-              >
-                <Trash2 className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowRoomModal(false)}
-                className="text-white hover:bg-white/20 h-10 w-10 rounded-full"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex h-[600px]">
-            {/* Members Sidebar */}
-            <div className="w-80 border-r border-gray-200 bg-gray-50 flex flex-col">
-              <div className="p-4 border-b border-gray-200">
-                <h4 className="font-semibold text-gray-800 mb-3">Members ({selectedRoom.members.length})</h4>
-                <div className="space-y-3">
-                  {selectedRoom.members.map((member) => (
-                    <div key={member.id} className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-gray-100 hover:border-primary-200 transition-colors">
-                      <div className="relative">
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                          {member.avatar}
-                        </div>
-                        {member.role === 'owner' && (
-                          <Crown className="absolute -top-1 -right-1 h-4 w-4 text-yellow-500" />
-                        )}
-                        <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
-                          member.isOnline ? 'bg-green-500' : 'bg-gray-400'
-                        }`} />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-800 text-sm">{member.name}</p>
-                        <p className="text-xs text-gray-500 capitalize">{member.role}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Room Info */}
-              <div className="p-4 flex-1">
-                <h5 className="font-semibold text-gray-800 mb-2">Room Info</h5>
-                <div className="space-y-2 text-sm text-gray-600">
-                  <p><span className="font-medium">Status:</span> {selectedRoom.status}</p>
-                  <p><span className="font-medium">Duration:</span> {selectedRoom.duration}</p>
-                  <p><span className="font-medium">Capacity:</span> {selectedRoom.memberCount}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Chat Area */}
-            <div className="flex-1 flex flex-col">
-              {/* Messages */}
-              <div className="flex-1 p-4 overflow-y-auto space-y-4 min-h-0">
-                {currentMessages.map((msg) => (
-                  <div key={msg.id} className={`flex ${msg.isOwn ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[70%] rounded-2xl px-4 py-3 ${
-                      msg.isOwn 
-                        ? 'bg-primary-500 text-white' 
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {!msg.isOwn && (
-                        <p className="text-xs font-medium mb-1 opacity-70">{msg.sender}</p>
-                      )}
-                      <p className="text-sm">{msg.message}</p>
-                      <p className={`text-xs mt-1 ${
-                        msg.isOwn ? 'text-purple-100' : 'text-gray-500'
-                      }`}>
-                        {msg.time}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Message Input */}
-              <div className="p-4 border-t border-gray-200 bg-white">
-                <div className="flex space-x-3">
-                  <input
-                    type="text"
-                    value={roomChatMessage}
-                    onChange={(e) => setRoomChatMessage(e.target.value)}
-                    onKeyPress={handleRoomKeyPress}
-                    placeholder="Type a message..."
-                    className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                  <Button
-                    onClick={handleSendRoomMessage}
-                    className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-3 rounded-xl"
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="flex items-center justify-between p-6 bg-white border-b border-gray-100">
-        <h1 className="text-xl md:text-2xl font-bold text-gray-800">The Hacker Network</h1>
+        <h1 className="font-brand text-xl md:text-2xl font-bold text-gray-800">The Hacker Network</h1>
         
         {/* Social Icons */}
         <div className="hidden md:flex items-center space-x-4">
@@ -604,9 +548,7 @@ export default function HackerNetworkPage() {
             onClick={() => setShowNotificationModal(true)}
           >
             <Bell className="h-5 w-5 text-gray-600" />
-            {notifications.length > 0 && (
-              <span className="absolute -top-1 -right-1 inline-flex h-3 w-3 rounded-full bg-red-500" />
-            )}
+            <span className="absolute -top-1 -right-1 inline-flex h-3 w-3 rounded-full bg-red-500" />
           </Button>
           
           <div className="relative" ref={profileDropdownRef}>
@@ -630,8 +572,8 @@ export default function HackerNetworkPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-12">
         {/* Title */}
-        <h2 className="pixel-font text-4xl md:text-6xl lg:text-7xl font-bold text-primary-600 mb-8 text-center">
-          Web3 Builder's House
+        <h2 className="font-main-heading text-4xl md:text-6xl lg:text-7xl font-bold mb-8 text-center bg-gradient-to-b from-blue-500 to-black bg-clip-text text-transparent">
+          Builder's House
         </h2>
         
         {/* Two Column Layout */}
@@ -753,12 +695,39 @@ export default function HackerNetworkPage() {
           >
             <MessageCircle className="w-6 h-6 group-hover:animate-pulse"/>
           </Button>
-          {showChatPopup && <ChatPopup />}
+          {showChatPopup && (
+            <ChatPopup
+              chatPopupRef={chatPopupRef}
+              chatMessages={chatMessages}
+              chatMessage={chatMessage}
+              setChatMessage={setChatMessage}
+              handleKeyPress={handleKeyPress}
+              handleSendMessage={handleSendMessage}
+              setShowChatPopup={setShowChatPopup}
+            />
+          )}
         </div>
 
         {/* Modals */}
-        {showNotificationModal && <NotificationModal />}
-        {showRoomModal && <RoomModal />}
+        {showNotificationModal && (
+          <NotificationModal
+            notifications={notifications}
+            setShowNotificationModal={setShowNotificationModal}
+          />
+        )}
+        {showRoomModal && (
+          <RoomModal
+            selectedRoom={selectedRoom}
+            roomMessages={roomMessages}
+            roomModalRef={roomModalRef}
+            handleDeleteRoom={handleDeleteRoom}
+            setShowRoomModal={setShowRoomModal}
+            roomChatMessage={roomChatMessage}
+            setRoomChatMessage={setRoomChatMessage}
+            handleRoomKeyPress={handleRoomKeyPress}
+            handleSendRoomMessage={handleSendRoomMessage}
+          />
+        )}
       </main>
     </div>
   )
