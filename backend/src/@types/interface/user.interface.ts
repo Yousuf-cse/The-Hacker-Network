@@ -13,7 +13,11 @@ export interface IUser {
     state: string;
     postalCode: string;
     country: string;
-    landmark: string;
+    landmark?: string;
+  };
+  location?: {
+    lat: number;
+    lng: number;
   };
 
   education: {

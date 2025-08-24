@@ -63,7 +63,11 @@ const userSchema = new Schema<IUser>(
         ...SCHEMA_DEFINATION_PROPERTY.requiredString,
         trim: true,
       },
-      landmark: SCHEMA_DEFINATION_PROPERTY.requiredString,
+      landmark: SCHEMA_DEFINATION_PROPERTY.optionalNullString,
+    },
+    location: {
+      lat: SCHEMA_DEFINATION_PROPERTY.optionalNumber,
+      lng: SCHEMA_DEFINATION_PROPERTY.optionalNumber,
     },
     education: {
       college_name: {
