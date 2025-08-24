@@ -60,8 +60,10 @@ export const login = (data: { email: string; password: string }) =>
   }>(api.post("/auth/login", data));
 
 // ---------------- Connection Request Endpoints ----------------
-export const createRequest = (data: { targetUserId: string }) =>
-  handleRequest<{ requestId: string }>(api.post("/request", data));
+export const createRequest = (data: {
+  from_user_objectId: string;
+  to_user_objectId: string;
+}) => handleRequest<{ requestId: string }>(api.post("/request", data));
 
 export const acceptRequest = (requestId: string) =>
   handleRequest<{ roomId: string }>(api.put(`/request/accept/${requestId}`));
@@ -71,7 +73,7 @@ export const cancelRequest = (requestId: string) =>
 
 // -------------------- User Endpoints --------------------
 export const getUserDetails = (id: string) =>
-  handleRequest<any>(api.get(`/profile/${id}`));
+  handleRequest<any>(api.get(`/user/profile/${id}`));
 
 export const findSimilarProfiles = (id: string) =>
-  handleRequest<any[]>(api.post("/find-similar", { _id: id }));
+  handleRequest<any[]>(api.post("/user/find-similar", { _id: id }));
