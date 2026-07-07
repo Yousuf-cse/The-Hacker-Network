@@ -6,6 +6,7 @@ import {
   comparePassword,
   generateJWT,
 } from "../../../services/auth/auth.service";
+import { getLatLngFromAddress } from "../../../services/getLatLngFromAddress";
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -78,12 +79,35 @@ export const signupController = async (req: Request, res: Response) => {
       });
     }
 
+    // Resolve address coordinates
+    let coordinates = { lat: 22.5726, lng: 88.3639 }; // Default: Kolkata
+    try {
+      const addressString = `${userData.address.street}, ${userData.address.city}, ${userData.address.postalCode}, ${userData.address.country}`;
+      const resolved = await getLatLngFromAddress(addressString);
+      if (resolved) {
+        coordinates = resolved;
+      } else {
+        // Fallback depending on city name
+        const city = String(userData.address.city).toLowerCase();
+        if (city.includes("delhi")) {
+          coordinates = { lat: 28.7041, lng: 77.1025 };
+        } else if (city.includes("bangalore") || city.includes("bengaluru")) {
+          coordinates = { lat: 12.9716, lng: 77.5946 };
+        } else if (city.includes("mumbai")) {
+          coordinates = { lat: 19.0760, lng: 72.8777 };
+        }
+      }
+    } catch (e) {
+      console.error("Geocoding failed during signup:", e);
+    }
+
     const hashPassword = await bcrypt.hash(userData.password, 10);
 
     // Create new user
     const newUser = new UserModel({
       ...userData,
       password: hashPassword,
+      location: coordinates,
     });
     await newUser.save();
 

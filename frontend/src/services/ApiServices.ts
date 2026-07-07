@@ -1,4 +1,5 @@
 import axios, { type AxiosInstance, type AxiosResponse } from "axios";
+import Cookies from "js-cookie";
 
 type ExLevel = "Beginner" | "Intermediate" | "Advanced" | "Expert";
 
@@ -42,6 +43,14 @@ const api: AxiosInstance = axios.create({
   },
 });
 
+api.interceptors.request.use((config) => {
+  const token = Cookies.get("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 async function handleRequest<T>(
   promise: Promise<AxiosResponse<ApiResponse<T>>>
 ): Promise<ApiResponse<T>> {
@@ -77,3 +86,31 @@ export const getUserDetails = (id: string) =>
 
 export const findSimilarProfiles = (id: string) =>
   handleRequest<any[]>(api.post("/user/find-similar", { _id: id }));
+
+// -------------------- Room Endpoints --------------------
+export const getUserAllRooms = (userId: string) =>
+  handleRequest<any>(api.get(`/room?userId=${userId}`));
+
+export const getAllRooms = () =>
+  handleRequest<any>(api.get("/room/all-rooms"));
+
+export const createRoom = (data: {
+  title: string;
+  description: string;
+  location: string;
+  max_members: number;
+  createdBy: string;
+  banner?: string;
+}) => handleRequest<any>(api.post("/room", data));
+
+// -------------------- Notification Endpoints --------------------
+export const getNotifications = (userId: string) =>
+  handleRequest<any>(api.get(`/notification/${userId}`));
+
+// -------------------- Request Endpoints --------------------
+export const getConnectionRequests = (userId: string) =>
+  handleRequest<any>(api.get(`/request?userId=${userId}`));
+
+// -------------------- Chat Endpoints --------------------
+export const getRoomMessages = (roomId: string) =>
+  handleRequest<any>(api.get(`/chat/${roomId}`));

@@ -11,6 +11,7 @@ import roomRouter from "./api/routes/room/room.routes";
 import requestRouter from "./api/routes/request/request.routes";
 import userRouter from "./api/routes/user/user.route";
 import notificationRouter from "./api/routes/notification/notification.route";
+import chatRouter from "./api/routes/chat/chat.routes";
 
 import { registerSocketHandlers } from "./socket/socket";
 
@@ -57,6 +58,7 @@ app.use("/api/request", requestRouter);
 app.use("/api/room", roomRouter);
 app.use("/api/user", userRouter);
 app.use("/api/notification", notificationRouter);
+app.use("/api/chat", chatRouter);
 
 // DB connection
 connectDB();

@@ -12,7 +12,7 @@ const roomSchema = new Schema<IRoom>(
     createdBy: SCHEMA_DEFINATION_PROPERTY.requiredString,
     members: SCHEMA_DEFINATION_PROPERTY.requiredArrayOfObjectId,
     max_members: {
-      ...SCHEMA_DEFINATION_PROPERTY.requiredString,
+      ...SCHEMA_DEFINATION_PROPERTY.requiredNumber,
       min: 0,
       max: 6,
     },

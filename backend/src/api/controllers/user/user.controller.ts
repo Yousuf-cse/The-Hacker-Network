@@ -56,6 +56,25 @@ export const userDetails = async (
   }
 };
 
+const getDistance = (
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number => {
+  const R = 6371; // Radius of the earth in km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Number((R * c).toFixed(2));
+};
+
 export const findSimilarProfile = async (
   req: Request,
   res: Response<ApiResponse<any[]>>
@@ -80,13 +99,8 @@ export const findSimilarProfile = async (
     }
 
     const mainSkills = normalizeSkills(mainUser.skills);
-    if (mainSkills.length === 0) {
-      return res.status(200).json({
-        success: true,
-        message: "No skills found for the main user.",
-        result: [],
-      });
-    }
+    const mainLat = mainUser.location?.lat;
+    const mainLng = mainUser.location?.lng;
 
     const otherUsers = await UserModel.find({ _id: { $ne: _id } })
       .select("-password")
@@ -99,22 +113,47 @@ export const findSimilarProfile = async (
           mainSkills.includes(s)
         );
 
+        let distance = Infinity;
+        if (
+          mainLat != null &&
+          mainLng != null &&
+          user.location?.lat != null &&
+          user.location?.lng != null
+        ) {
+          distance = getDistance(
+            mainLat,
+            mainLng,
+            user.location.lat,
+            user.location.lng
+          );
+        }
+
         return {
           ...user,
           similarityScore: commonSkills.length,
           commonSkills,
+          near: distance,
         };
-      })
+      });
+
+    // Try to filter by similarityScore > 0 first
+    let result = matches
       .filter((u: any) => u.similarityScore > 0)
-      .sort((a: any, b: any) => b.similarityScore - a.similarityScore)
-      .slice(0, 10);
+      .sort((a: any, b: any) => b.similarityScore - a.similarityScore);
+
+    // Fallback: if no users have overlapping skills, show all other users sorted by distance
+    if (result.length === 0) {
+      result = matches.sort((a: any, b: any) => a.near - b.near);
+    }
+
+    const finalResult = result.slice(0, 10);
 
     res.status(200).json({
       success: true,
-      message: matches.length
+      message: finalResult.length
         ? "Similar profiles found."
-        : "No similar profiles found.",
-      result: matches,
+        : "No profiles found.",
+      result: finalResult,
     });
   } catch (error) {
     console.error("Error finding similar profiles:", error);
