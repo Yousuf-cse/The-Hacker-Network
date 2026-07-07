@@ -22,7 +22,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Allowed origins for CORS
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.FRONTEND_URL,
+].filter(Boolean) as string[];
 
 // Express middleware
 app.use(express.json());
