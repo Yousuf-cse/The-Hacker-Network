@@ -1186,6 +1186,15 @@ const MultiStepSignup = () => {
               )}
             </CardFooter>
           </Card>
+          <div className="text-sm text-center text-gray-600 mt-4 font-inter">
+            Already have an account?{" "}
+            <button
+              onClick={() => navigate("/auth?login")}
+              className="text-blue-600 hover:underline font-semibold"
+            >
+              Sign in
+            </button>
+          </div>
         </div>
       </div>
     </div>
