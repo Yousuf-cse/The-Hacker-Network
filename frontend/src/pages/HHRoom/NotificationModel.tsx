@@ -21,7 +21,7 @@ export default function NotificationModal({
     try {
       setLoading(true);
       const res = await getConnectionRequests(userId);
-      const list = res.requests || (res as any).result || [];
+      const list = (res as any).requests || (res as any).result || [];
       // Filter pending requests where the user is the receiver
       const pending = list.filter((r: any) => r.status === "Pending" && r.role === "receiver");
       setRequests(pending);

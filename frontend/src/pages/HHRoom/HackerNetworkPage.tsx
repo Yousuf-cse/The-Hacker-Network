@@ -1,13 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { useNotifications } from "@/contexts/NotificationContext";
 import {
   User,
   MessageCircle,
   Bell,
   X,
-  Settings,
   LogOut,
-  Mail,
   Send,
   Minimize2,
   Facebook,
@@ -29,7 +26,6 @@ import {
   getAllRooms,
   createRoom,
   getRoomMessages,
-  acceptRequest,
 } from "@/services/ApiServices";
 import { toast } from "sonner";
 
@@ -369,10 +365,10 @@ export default function HackerNetworkPage() {
       const userRoomsRes = await getUserAllRooms(userId);
       const allRoomsRes = await getAllRooms();
 
-      const userRoomsList = userRoomsRes.rooms || [];
+      const userRoomsList = (userRoomsRes as any).rooms || [];
       setJoinedRooms(userRoomsList);
 
-      const allRoomsList = allRoomsRes.rooms || [];
+      const allRoomsList = (allRoomsRes as any).rooms || [];
       // Filter out rooms that the user is already a member of
       const userRoomIds = userRoomsList.map((r: any) => r._id);
       const filteredAvailable = allRoomsList.filter(
@@ -460,7 +456,7 @@ export default function HackerNetworkPage() {
     // Load message history from DB
     try {
       const res = await getRoomMessages(room._id);
-      const msgs = res.messages || [];
+      const msgs = (res as any).messages || [];
       setRoomMessages(msgs);
     } catch (error) {
       console.error("Failed to load historical messages:", error);
@@ -485,21 +481,7 @@ export default function HackerNetworkPage() {
     }
   };
 
-  // Join an available room
-  const handleJoinAvailableRoom = async (roomId: string) => {
-    try {
-      // In the current setup, we need a room confirmation, or we can add ourselves directly.
-      // But wait! Let's check how the backend room schema allows adding members.
-      // Since there is no explicit join room backend endpoint, let's write a backend controller or simply let them join.
-      // Actually, joining a public room is a required MVP feature!
-      // Let's create an endpoint in room.controller.ts if needed, but since we didn't add it yet, let's check:
-      // If we want users to join public rooms, we can add a join room endpoint in room.controller.ts!
-      // Wait, is there a join room endpoint? No.
-      // Let's write one in `room.controller.ts` so joining works!
-    } catch (e) {
-      toast.error("Failed to join room");
-    }
-  };
+
 
   // Create Room handler
   const handleCreateRoom = async (e: React.FormEvent) => {
